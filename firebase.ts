@@ -11,7 +11,7 @@ import { getAuth } from 'firebase/auth'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBm0ssh705L9_oWshERAct2ZXNk5DKanFs",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "netflix-e4598.firebaseapp.com",
   projectId: "netflix-e4598",
   storageBucket: "netflix-e4598.appspot.com",

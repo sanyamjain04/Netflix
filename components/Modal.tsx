@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
-import { modalState, movieState } from '../atoms/modalAtom'
-import ReactPlayer from 'react-player/lazy'
-import { FaPlay } from 'react-icons/fa'
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { modalState, movieState } from "../atoms/modalAtom";
+import ReactPlayer from "react-player/lazy";
+import { FaPlay, FaRegThumbsUp, FaVolumeUp, FaVolumeOff } from "react-icons/fa";
+import { AiOutlinePlusCircle } from "react-icons/ai";
 // import {
 //   CheckIcon,
 //   PlusIcon,
@@ -11,8 +12,8 @@ import { FaPlay } from 'react-icons/fa'
 //   VolumeUpIcon,
 //   XIcon,
 // } from '@heroicons/react/outline'
-import { Element, Genre, Movie } from '../typing'
-import MuiModal from '@mui/material/Modal'
+import { Element, Genre, Movie } from "../typing";
+import MuiModal from "@mui/material/Modal";
 import {
   collection,
   deleteDoc,
@@ -20,61 +21,61 @@ import {
   DocumentData,
   onSnapshot,
   setDoc,
-} from 'firebase/firestore'
+} from "firebase/firestore";
 // import { db } from '../firebase'
-import useAuth from '../hooks/useAuth'
+import useAuth from "../hooks/useAuth";
 // import toast, { Toaster } from 'react-hot-toast'
 
 function Modal() {
-  const [movie, setMovie] = useRecoilState(movieState)
-  const [trailer, setTrailer] = useState('')
-  const [showModal, setShowModal] = useRecoilState(modalState)
-  const [muted, setMuted] = useState(true)
-  const [genres, setGenres] = useState<Genre[]>([])
-  const [addedToList, setAddedToList] = useState(false)
-  const { user } = useAuth()
-  const [movies, setMovies] = useState<DocumentData[] | Movie[]>([])
+  const [movie, setMovie] = useRecoilState(movieState);
+  const [trailer, setTrailer] = useState("");
+  const [showModal, setShowModal] = useRecoilState(modalState);
+  const [muted, setMuted] = useState(false);
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [addedToList, setAddedToList] = useState(false);
+  const { user } = useAuth();
+  const [movies, setMovies] = useState<DocumentData[] | Movie[]>([]);
 
   const toastStyle = {
-    background: 'white',
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    padding: '15px',
-    borderRadius: '9999px',
-    maxWidth: '1000px',
-  }
+    background: "white",
+    color: "black",
+    fontWeight: "bold",
+    fontSize: "16px",
+    padding: "15px",
+    borderRadius: "9999px",
+    maxWidth: "1000px",
+  };
 
   useEffect(() => {
-    if (!movie) return
+    if (!movie) return;
 
     async function fetchMovie() {
       const data = await fetch(
         `https://api.themoviedb.org/3/${
-          movie?.media_type === 'tv' ? 'tv' : 'movie'
+          movie?.media_type === "tv" ? "tv" : "movie"
         }/${movie?.id}?api_key=${
           process.env.NEXT_PUBLIC_API_KEY
         }&language=en-US&append_to_response=videos`
-      ).then((response) => response.json())
+      ).then((response) => response.json());
       if (data?.videos) {
         const index = data.videos.results.findIndex(
-          (element: Element) => element.type === 'Trailer'
-        )
-        setTrailer(data.videos?.results[index]?.key)
+          (element: Element) => element.type === "Trailer"
+        );
+        setTrailer(data.videos?.results[index]?.key);
       }
       if (data?.genres) {
-        setGenres(data.genres)
+        setGenres(data.genres);
       }
     }
 
-    fetchMovie()
-  }, [movie])
+    fetchMovie();
+  }, [movie]);
 
   const handleClose = () => {
-    setShowModal(false)
-    setMovie(null)
+    setShowModal(false);
+    setMovie(null);
     // toast.dismiss()
-  }
+  };
 
   // Find all the movies in the user's list
   // useEffect(() => {
@@ -93,7 +94,7 @@ function Modal() {
         movies.findIndex((result) => result.data().id === movie?.id) !== -1
       ),
     [movies]
-  )
+  );
 
   // const handleList = async () => {
   //   if (addedToList) {
@@ -126,7 +127,7 @@ function Modal() {
   //   }
   // }
 
-  console.log(addedToList)
+  // console.log(addedToList)
 
   return (
     <MuiModal
@@ -137,7 +138,7 @@ function Modal() {
       <>
         {/* <Toaster position="bottom-center" /> */}
         <button
-          className="modalButton absolute right-5 top-5 !z-40 h-9 w-9 border-none bg-[#181818] hover:bg-[#181818]"
+          className="modalBtn absolute right-5 top-5 !z-40 h-9 w-9 border-none bg-[#181818] hover:bg-[#181818]"
           onClick={handleClose}
         >
           {/* <XIcon className="h-6 w-6" /> */}
@@ -145,46 +146,49 @@ function Modal() {
 
         <div className="relative pt-[56.25%]">
           <ReactPlayer
-            url={`https://www.youtube.com/watch?v=${trailer}`}
+            url={
+              `https://www.youtube.com/watch?v=${trailer}` ||
+              "https://www.youtube.com/watch?v=hpwnlr-ZHB0&ab_channel=T-Series"
+            }
             width="100%"
             height="100%"
-            style={{ position: 'absolute', top: '0', left: '0' }}
-            playing
+            style={{ position: "absolute", top: "0", left: "0" }}
             muted={muted}
           />
           <div className="absolute bottom-10 flex w-full items-center justify-between px-10">
             <div className="flex space-x-2">
-              <button className="flex items-center gap-x-2 rounded bg-white px-8 text-xl font-bold text-black transition hover:bg-[#e6e6e6]">
-                <FaPlay className="h-7 w-7 text-black" />
+              <button className="flex items-center gap-x-2 rounded bg-white px-7 text-xl font-bold text-black transition hover:bg-[#e6e6e6]">
+                <FaPlay className="h-7 w-7 text-black p-1" />
                 Play
               </button>
-              {/* <button className="modalButton"
-              //  onClick={handleList}
-               >
+              <button
+                className="modalBtn"
+                //  onClick={handleList}
+              >
                 {addedToList ? (
-                  // <CheckIcon className="h-7 w-7" />
+                  <AiOutlinePlusCircle className="h-7 w-7" />
                 ) : (
-                  // <PlusIcon className="h-7 w-7" />
+                  <AiOutlinePlusCircle className="h-7 w-7" />
                 )}
-              </button> */}
-              <button className="modalButton">
-                {/* <ThumbUpIcon className="h-6 w-6" /> */}
+              </button>
+              <button className="modalBtn">
+                <FaRegThumbsUp className="h-6 w-6" />
               </button>
             </div>
-            {/* <button className="modalButton" onClick={() => setMuted(!muted)}>
+            <button className="modalBtn" onClick={() => setMuted(!muted)}>
               {muted ? (
-                // <VolumeOffIcon className="h-6 w-6" />
+                <FaVolumeOff className="h-6 w-6" />
               ) : (
-                // <VolumeUpIcon className="h-6 w-6" />
+                <FaVolumeUp className="h-6 w-6" />
               )}
-            </button> */}
+            </button>
           </div>
         </div>
         <div className="flex space-x-16 rounded-b-md bg-[#181818] px-10 py-8">
           <div className="space-y-6 text-lg">
             <div className="flex items-center space-x-2 text-sm">
               <p className="font-semibold text-green-400">
-                {movie!.vote_average * 10}% Match
+                {Math.floor(movie!.vote_average * 10)}% Match
               </p>
               <p className="font-light">
                 {movie?.release_date || movie?.first_air_date}
@@ -197,17 +201,17 @@ function Modal() {
               <p className="w-5/6">{movie?.overview}</p>
               <div className="flex flex-col space-y-3 text-sm">
                 <div>
-                  <span className="text-[gray]">Genres:</span>{' '}
-                  {genres.map((genre) => genre.name).join(', ')}
+                  <span className="text-[gray]">Genres:</span>{" "}
+                  {genres.map((genre) => genre.name).join(", ")}
                 </div>
 
                 <div>
-                  <span className="text-[gray]">Original language:</span>{' '}
+                  <span className="text-[gray]">Original language:</span>{" "}
                   {movie?.original_language}
                 </div>
 
                 <div>
-                  <span className="text-[gray]">Total votes:</span>{' '}
+                  <span className="text-[gray]">Total votes:</span>{" "}
                   {movie?.vote_count}
                 </div>
               </div>
@@ -216,7 +220,7 @@ function Modal() {
         </div>
       </>
     </MuiModal>
-  )
+  );
 }
 
-export default Modal
+export default Modal;
